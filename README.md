@@ -306,7 +306,7 @@ UpdateTicked（每帧）
 ## 📄 许可证
 
 本项目代码采用 **[MIT License](LICENSE)** —— 你可以自由使用、修改、二次分发（包括打包进整合包、上 N 网），
-只要保留版权声明。选它是因为模组生态里最省事：别人想改一行不用先来问你。
+只要保留版权声明。
 
 几点边界要说清楚：
 
@@ -319,4 +319,4 @@ UpdateTicked（每帧）
 - **Harmony** 由 SMAPI 自带（`smapi-internal/0Harmony.dll`），不随本模组分发。
 - **Generic Mod Config Menu** 是可选依赖，想要图形化设置界面请自行安装，本项目不再附带。
 
-> 作者：[UUIK2020](https://github.com/UUIK2020)。想换署名就改 `LICENSE` 第一行。
+> 作者：[UUIK2020](https://github.com/UUIK2020)。
