@@ -74,6 +74,49 @@ AI雇工Mod-x.y.z/
 
 > SMAPI 只认 `manifest.json` 指向的 dll，mod 文件夹里多一个 txt 不影响加载。
 
+#### 小黑盒（Heybox）适配器规则
+
+平台给的安装器脚本（`index.cjs`）里，SMAPI 类 mod 走的是这个函数：
+
+```js
+function installStardewValley(files, stagingPath) {
+  const manifestFiles = files.filter(isManifest);          // 找所有 manifest.json
+  for (const manifestFile of manifestFiles) {
+    const rootFolder = posix.dirname(relManifest);         // ← 取 manifest 的父目录
+    const modName = sanitizeName(rootFolder ? basename(rootFolder) : manifest.Name);
+    const prefix = rootFolder ? `${rootFolder}/` : "";
+    for (const source of files) {
+      if (!source.startsWith(prefix)) continue;
+      instructions.push({ copy, source, destination: `${modName}/${source.slice(prefix.length)}` });
+    }
+  }
+  return { instructions, modType: "SMAPI" };              // SMAPI 类型 → 装到 {game}/Mods/
+}
+```
+
+**结论：安装文件夹名取自 manifest 的父目录名，不是 manifest 里的 `Name`。** 于是：
+
+| 包结构 | 装到哪 |
+|--------|--------|
+| `AIHireling/manifest.json`（扁平） | `Mods/AIHireling/...` ✅ 推荐 |
+| `Mods/AIHireling/manifest.json`（当前） | `Mods/AIHireling/...` ✅ 也对（`basename` 正好取到 `AIHireling`） |
+| `manifest.json` 直接在 zip 根 | `Mods/AI雇工 (AI Hireling)/...` ⚠️ 用 `Name` 当文件夹名，带空格括号，丑且和 UniqueID 脱节 |
+
+**所以永远不要把 `manifest.json` 放在 zip 根目录。** 两种有父目录的结构都能正确安装，扁平版更标准（也是 Nexus 上多数 mod 的形态）。
+
+其他判定：
+
+- `testSupported` 要求「有 manifest.json」且「没有 `content/` 目录」且「不是 SMAPI 安装包」→ 我们命中通用安装器。
+- `isManifest` 会跳过 `i18n/` `locale/` `locales/` 下的 manifest，别把翻译包塞进这些目录。
+- zip 里如果有**多个** manifest 会装成多个 mod，所以打包时别把 `_refs/old-aihireling` 之类带进去。
+- 适配器本身能装 SMAPI（识别 `smapi.installer.dll` / `StardewModdingAPI.exe`，还会写 Steam 启动项 `"<smapi.exe>" %command%`），
+  并且 `getSmapiStatus()` 会检查游戏根目录有没有 `StardewModdingAPI.exe`，缺了会提示装 SMAPI。
+
+发布用的两个包：
+
+- `dist/AI雇工Mod-2.7.1.zip` —— 手动安装用（解压合并 `Mods` 文件夹，说明书写的是这个流程）
+- `dist/AIhireling-2.7.1-适配器版.zip` —— 适配器/一键安装用（zip 根就是 `AIHireling/`）
+
 ## 3. 目录结构
 
 ```
