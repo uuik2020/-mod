@@ -1,0 +1,9 @@
+# 换行统一（避免 Windows 上整个文件都显示成改动）
+* text=auto eol=crlf
+
+# 二进制文件别做文本处理
+*.png binary
+*.dll binary
+*.pdb binary
+*.zip binary
+*.bak binary

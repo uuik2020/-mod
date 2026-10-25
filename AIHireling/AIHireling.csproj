@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <EnableModZip>false</EnableModZip>
+    <Version>2.7.1</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.0.1" />
+  </ItemGroup>
+
+  <!-- Harmony 随 SMAPI 一起装（smapi-internal/0Harmony.dll），
+       用来把 AI 的身体插进原版 GameLocation.drawFarmers 之后，这样草叶/作物/树才会盖住他。 -->
+  <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>$(GamePath)/smapi-internal/0Harmony.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+</Project>

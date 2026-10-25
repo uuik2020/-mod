@@ -1,0 +1,10 @@
+{
+  "Name": "AI雇工 (AI Hireling)",
+  "Author": "UUIK2020",
+  "Version": "2.7.1",
+  "Description": "可雇佣的 AI 小农夫：跟随 / 干农活 / 砍树挖矿钓鱼（要鱼竿、耗鱼饵体力）/ 随时存档。",
+  "UniqueID": "WorkBuddy.AIHireling",
+  "MinimumApiVersion": "4.0.0",
+  "EntryDll": "AIHireling.dll",
+  "UpdateKeys": []
+}

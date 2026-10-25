@@ -1,0 +1,33 @@
+# .NET 构建输出
+bin/
+obj/
+*.user
+*.suo
+
+# 发布暂存目录（dist/ 里的 zip 保留，staging 目录忽略）
+dist/AI雇工Mod-*/
+
+# 第三方 / 参考资料 —— 绝对不能上传
+#   _refs/     星露谷物语的反编译源码，版权归 ConcernedApe，只能本地阅读
+#   gmcm-src/  Generic Mod Config Menu 的源码，版权归 spacechase0
+_refs/
+gmcm-src/
+
+# 本地小工具里编译出来的东西
+_tools/**/bin/
+_tools/**/obj/
+
+# 临时截图 / 备份 dll
+*.bak
+_*_zoom.png
+_sprite_preview.png
+
+# 系统垃圾
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vs/
+.idea/
+*.dotCover

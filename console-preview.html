@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>AI雇工 2.6.2 · 控制台效果预览</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 28px 20px 40px;
+    background: #12100f;
+    font-family: "Cascadia Mono", Consolas, "Sarasa Mono SC", "Microsoft YaHei Mono", monospace;
+    color: #ccc;
+  }
+  .wrap { max-width: 940px; margin: 0 auto; }
+  h1 { font-size: 17px; color: #eee; margin: 0 0 4px; font-weight: 600; letter-spacing: .5px; }
+  .sub { font-size: 12.5px; color: #7d7a75; margin-bottom: 20px; }
+  .term {
+    background: #0c0c0c;
+    border: 1px solid #2b2926;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 16px 40px rgba(0,0,0,.5);
+  }
+  .bar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 12px; background: #1a1a1a; border-bottom: 1px solid #262626;
+  }
+  .dot { width: 11px; height: 11px; border-radius: 50%; }
+  .bar span { font-size: 12px; color: #888; margin-left: 6px; }
+  .body { padding: 14px 16px 22px; font-size: 13.5px; line-height: 1.72; white-space: pre; overflow-x: auto; }
+
+  /* 颜色取自模组里的 256 色值 */
+  .grey   { color: #808080; }
+  .silver { color: #bcbcbc; }
+  .cyan   { color: #00ffff; }
+  .teal   { color: #00d7d7; }
+  .green  { color: #00ff87; }
+  .lime   { color: #87ff87; }
+  .gold   { color: #ffd787; }
+  .orange { color: #ffaf5f; }
+  .red    { color: #ff5f5f; }
+  .blue   { color: #5fafff; }
+  .purple { color: #d787ff; }
+  .white  { color: #eeeeee; }
+  .bold   { font-weight: 700; }
+  .tag    { font-weight: 700; }
+  .dim    { color: #6b6b6b; }
+  .legend { margin-top: 22px; display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px 18px; font-size: 12.5px; }
+  .legend div { color: #999; }
+  .legend b { font-weight: 700; margin-right: 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>AI雇工 2.6.2 · SMAPI 控制台效果</h1>
+  <div class="sub">下面是实际输出样式（颜色与图标都是模组真实生成的，这里只是把 ANSI 码渲染出来）</div>
+
+  <div class="term">
+    <div class="bar">
+      <div class="dot" style="background:#ff5f56"></div>
+      <div class="dot" style="background:#ffbd2e"></div>
+      <div class="dot" style="background:#27c93f"></div>
+      <span>StardewModdingAPI.exe</span>
+    </div>
+    <div class="body"><span class="grey">[18:40:02 INFO  SMAPI]</span>    AI雇工 (AI Hireling) 2.6.2 by WorkBuddy | 可雇佣的 AI 小农夫：跟随 / 干农活 / 砍树挖矿钓鱼（要鱼竿、耗鱼饵体力）/ 随时存档。
+<span class="grey">[18:40:02 TRACE SMAPI]</span>    Loading mods...
+<span class="grey">[18:40:03 INFO  AI雇工 (AI Hireling)]</span> <span class="cyan bold">◆</span> <span class="cyan bold">AI雇工 2.6.2 已加载</span><span class="grey"> ────────────────────────────────</span>
+     <span class="blue">▶</span> <span class="blue">找他说话</span>  <span class="white">走到他面前（农舍门外）按 E</span>
+     <span class="blue">▶</span> <span class="blue">随时存档</span>  <span class="white">按 F5，走的是游戏原版存档</span>
+     <span class="blue">▶</span> <span class="blue">改参数</span>    <span class="white">两种方式，任选一种：</span>
+        <span class="silver">① 游戏里按 E 找他 →「设置（调参数）」，上下选行、左右改值</span>
+        <span class="silver">② 在 SMAPI 那个黑窗口里输入 ai_cfg 再按回车，会把参数全列出来</span>
+        <span class="silver">控制台已上色（可在「设置 → 控制台显示」里关掉）</span>
+<span class="grey">[18:40:05 INFO  AI雇工 (AI Hireling)]</span> <span class="cyan bold">◆</span> <span class="cyan bold">[当前配置]</span><span class="silver"> </span>
+     <span class="silver">工资    日=100  免费=2天  雇佣=500  死亡涨价=200  重生等=0天</span>
+     <span class="silver">战斗    血量=120  攻击=12  间隔=700ms</span>
+     <span class="silver">移动    速度=5  范围=14格  上班=6:00  睡觉=22:00  夜晚回家=开</span>
+     <span class="silver">行为    清理=开  打怪=开  砍树=开  挖矿=开  钓鱼=开</span>
+     <span class="silver">钓鱼    需要鱼竿=开  耗鱼饵=开  耗体力=开  体力上限=270</span>
+     <span class="silver">挖矿    需要镐子=开  耗体力=开</span>
+     <span class="silver">提示    每天最多=2次  之后静默=3天</span>
+     <span class="silver">控制台  彩色=开  图标=开  本机支持颜色=是</span>
+     <span class="silver">背包    容量=12组  满了找你=开</span>
+     <span class="silver">存档    随时=开  快捷键=F5  只在睡觉时间=关</span>
+<span class="grey">[18:40:05 INFO  AI雇工 (AI Hireling)]</span> <span class="cyan bold">◆</span> <span class="cyan bold">[用法]</span>
+     <span class="silver">ai_cfg &lt;键&gt; &lt;值&gt;         改数值（键名见下）</span>
+     <span class="silver">ai_cfg &lt;开关&gt; on|off     改开关</span>
+     <span class="silver">ai_cfg save              立刻存一次原版存档</span>
+     <span class="silver">ai_cfg fishpool          查游戏鱼表 / 无效的鱼 ID</span>
+
+<span class="grey">[18:41:10 TRACE AI雇工 (AI Hireling)]</span> <span class="teal">·</span> <span class="bold teal">[钓鱼]</span><span class="grey"> 我在 (62,16)，目标水面 (55,20)，距离 8 格</span>
+<span class="grey">[18:41:14 TRACE AI雇工 (AI Hireling)]</span> <span class="teal">·</span> <span class="bold teal">[钓鱼]</span><span class="grey"> 站到 (55,19)，朝水面 (55,20) 抛竿（差 2.4 格，体力 268/270，鱼饵剩 41，咬钩约 7.6s）</span>
+<span class="grey">[18:41:22 TRACE AI雇工 (AI Hireling)]</span> <span class="teal">·</span> <span class="bold teal">[钓鱼]</span><span class="grey"> 钓到 1 条 128（河鲈）</span>
+<span class="grey">[18:41:30 TRACE AI雇工 (AI Hireling)]</span> <span class="teal">·</span> <span class="bold teal">[寻路]</span><span class="grey"> 卡住了，朝目标挪一步 (26,88) → (25,89)，还差 10.4 格</span>
+<span class="grey">[18:41:38 WARN  AI雇工 (AI Hireling)]</span> <span class="gold">▲</span> <span class="orange">[干活] 干不了：没镐子（体力 268/270，鱼饵 41 个）</span>
+
+<span class="grey">[18:42:02 INFO  AI雇工 (AI Hireling)]</span> <span class="green">√</span> <span class="lime">已保存到 config.json。</span>
+<span class="grey">[18:42:05 INFO  AI雇工 (AI Hireling)]</span> <span class="blue">▶</span> <span class="silver">已开始写原版存档，写完会在游戏里提示「已存档」。</span>
+<span class="grey">[18:42:09 WARN  AI雇工 (AI Hireling)]</span> <span class="gold">▲</span> <span class="orange">没能存档：现在才 17:30，还没到睡觉的点呢——要 22:00 才能睡，还差 4 小时 30 分钟。</span>
+<span class="grey">[18:42:12 ERROR AI雇工 (AI Hireling)]</span> <span class="red">×</span> <span class="red">加载角色贴图失败: Could not find a part of the path 'assets/ai_sprite.png'.</span>
+<span class="grey">[18:42:20 INFO  AI雇工 (AI Hireling)]</span> <span class="gold">★</span> <span class="gold">[提示] 「没鱼竿」今天已说 2 次，静默到第 31 天</span></div>
+  </div>
+
+  <div class="legend">
+    <div><b class="cyan">◆</b>信息 / 加载</div>
+    <div><b class="blue">▶</b>步骤 / 动作</div>
+    <div><b class="green">√</b>成功</div>
+    <div><b class="gold">▲</b>警告</div>
+    <div><b class="red">×</b>出错</div>
+    <div><b class="gold">★</b>重点 / 提示</div>
+    <div><b class="purple">※</b>说明</div>
+    <div><b class="teal">·</b>干活追踪（[钓鱼] [寻路]）</div>
+  </div>
+</div>
+</body>
+</html>
