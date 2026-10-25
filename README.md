@@ -159,29 +159,86 @@ dotnet build
 
 **改像素形象**：编辑 [`tools/make_sprite.py`](tools/make_sprite.py) 里的调色板和部件函数后重跑，会重新生成 `assets/ai_sprite.png`。
 
-## 📁 项目结构
+## 📁 源码结构
 
 ```
-├── AIHireling/               # Mod 源码（C# / net6.0）
-│   ├── ModEntry.cs           #   入口：事件、GMCM 注册、雇佣/工资/对话流程
-│   ├── Companion.cs          #   AI 实体：决策状态机 + 移动/战斗/农活/清理
-│   ├── CompanionRenderer.cs  #   世界渲染：精灵/血条/头顶标签/钓鱼线
-│   ├── DialogueSystem.cs     #   自绘对话 UI
-│   ├── ModConfig.cs          #   全部配置项（中文键名）
-│   ├── SaveData.cs           #   存档持久化
-│   ├── NativeSave.cs         #   随时存档：驱动原版 SaveGame.Save() 协程
-│   └── assets/ai_sprite.png  #   十二帧精灵图
-├── tools/                    # 贴图生成器 / 元数据工具
-├── gmcm-src/                 # 自编译的 GenericModConfigMenu 1.11.2（net6.0 适配）
-└── dist/                     # 历史分发包
+AIHireling/                        7.7k 行 C#（net6.0）
+├── ModEntry.cs            2076 行  入口 + 全局调度
+│   ├─ Entry()                     读配置、起 ConsoleArt、挂 Harmony、注册事件与 ai_cfg 命令
+│   ├─ OnSaveLoaded/DayStarted     生成 AI、算家门口格子、读背包与体力、发工资
+│   ├─ OnUpdateTicked()            每帧推 Companion.Update + 树后虚化判断
+│   ├─ OnRenderedWorld()           画头顶 UI（名字/胶囊/血条/提示）
+│   ├─ AlertBagFull()              背包满的「都给你 / 塞箱子 / 先背着」三选一
+│   └─ ShowSettingsMenu()          内置设置 8 页（表驱动，加页只改数组）
+│
+├── Companion.cs           3313 行  AI 本体（逻辑全在这）
+│   ├─ Update(dt)                  主循环：体力回复 → 受击 → 卡住检测 → 决策 → 执行
+│   ├─ Think()                     每 350ms 选一次活，写进 Job（类型 + 目标格）
+│   ├─ ExecuteJob(dt)              按 Job 分派：DoFarm / DoFishing / DoMining / DoCleanup …
+│   ├─ MoveToward()                直线优先，被挡就走 BFS（800 节点 / ±22 格），再不行侧滑
+│   └─ 找东西：FindWaterTile / NearestTree / FindCleanupTarget / FindChestForBag
+│
+├── CompanionRenderer.cs    786 行  世界渲染
+│   ├─ DrawBody()                  影子 + 精灵 + 钓鱼特效 —— 由 Harmony 在原版层序里调用
+│   ├─ DrawOverlay()               名字 / 状态胶囊 / 血条体力条 / 脚下标签（世界之后画）
+│   ├─ DrawUpperBody()             被草挡住时补画上半身，草丛里也看得见人
+│   ├─ FadeCoveringTrees()         站在树后 → 把那棵树的 alpha 压到 0.4（同原版玩家）
+│   └─ DrawFishing()               鱼竿摆动 / 浮漂抛物线 / 涟漪 / 水花
+│
+├── DrawHook.cs              92 行  Harmony 补丁：把身体插进 GameLocation.drawFarmers 之后
+│                                    （= 和玩家同一层，后面的物件/草/树才会盖住他）
+├── ConsoleArt.cs           285 行  控制台彩色 + 图标（自己开 VT、BMP 符号、多行缩进）
+├── DialogueSystem.cs       436 行  自绘底部对话框（选项/左右调值/鼠标点击/关掉即存）
+├── NativeSave.cs           298 行  随时存档：驱动原版 SaveGame.Save() 协程
+├── ModConfig.cs            202 行  全部可调参数（中文键名，直接映射 config.json）
+├── SaveData.cs              70 行  存档结构（雇佣状态/工资/背包物品/体力/提示计数）
+├── IGenericModConfigMenuApi.cs     GMCM 的反射接口（不装 GMCM 也能编译运行）
+└── assets/ai_sprite.png           12 帧小人（16×24 × 4 方向 × 3 帧）
 ```
 
-### 实现要点
+### 一次「想到 → 走到 → 画到屏幕」的完整链路
 
-- AI **不注册进 `GameLocation.characters`**（避免被游戏日程系统接管），由 `UpdateTicked` 驱动、`RenderedWorld` 手工绘制，移动用 `isCollidingPosition` 碰撞检测
-- 跨地图守卫：AI 记录自己所在的 `GameLocation`，不在玩家当前地图时就地待命——不会追进屋、不会穿墙
-- 对话 UI 挂在 `Game1.activeClickableMenu` 上阻挡输入，每帧校正菜单挂载状态，保证任何情况下都不会锁死玩家移动
-- 随时存档复用原版 `SaveGame.Save()` 协程：置 `Game1.IsSaving`（原版就靠它冻结世界并切到存档画面）→ 挂空白菜单吃输入 → 每帧推一次协程 → 跑完撤标志。协程推进点同时挂在 `UpdateTicked` 与 `Rendered` 上，因为存档时 `Game1.Update` 会提前 return，只靠其一有卡死风险
+```
+UpdateTicked（每帧）
+  └─ Companion.Update(dt)
+       ├─ RegenStamina()        睡觉回满；待命 2点/秒、跟随 1点/秒
+       ├─ UpdateMonsterDamage() 被怪贴脸就挨打
+       ├─ UpdateStuck()         同一个任务 5~9 秒没挪动 → 拉黑目标换活
+       ├─ Think()               每 350ms 按优先级挑活：
+       │                        回家 > 背包满(塞箱子/找你) > 打怪 > 挖矿 > 农场清理
+       │                        > 采集 > 砍树 > 钓鱼 > 跟随
+       └─ ExecuteJob(dt)        MoveToward 走过去 → 到位后干活
+
+绘制（同一帧内，按原版顺序）
+  GameLocation.draw
+    ├─ drawCharacters / drawFarmers      村民、玩家
+    ├─ [Harmony Postfix] DrawBody        ← AI 的身体在这里，和玩家同层
+    ├─ objects 循环                      石头、树枝、杂草、箱子
+    └─ drawAboveFrontLayer              草地、作物、树  ← 自然盖住 AI
+  RenderedWorld
+    ├─ DrawUpperBody                     被草挡住时露上半身
+    └─ DrawOverlay                       名字、血条、状态（永远在最上层）
+```
+
+### 几个关键设计（改代码前值得知道）
+
+- **AI 不注册进 `GameLocation.characters`**：注册进去会被游戏日程/存档系统接管，反而更难控。位置、碰撞、寻路全是自己维护的。
+- **逻辑坐标和绘制坐标是两个概念**：`Position` / `Tile` 决定"站在哪"，`CompanionRenderer.LiftY` 只挪"画在哪"。所以调整视觉高度不会影响寻路。
+- **遮挡靠原版层序，不靠补画**：早期试过"画完 AI 再补画周围地形"，同一张草贴图叠两层会把人埋掉。现在用 Harmony 挂在 `drawFarmers` 后面，每张贴图只画一次。
+- **卡死兜底一律用「改位置」而不是「加超时」**：贴墙时 `WasMoving` 和 `Tile` 都会被微小抖动骗过，只有 `HopToward()` 直接挪一格才可靠。
+- **所有提示都走 `CLog`**：想加日志直接 `CLog.Warn("…")`，自动带图标/颜色/多行缩进，还会按配置降级成纯文本。
+
+### 想改点什么，从哪下手
+
+| 想做的事 | 改哪里 |
+|---|---|
+| 加一种工作模式 | `AiMode` 枚举 → `ShowModeMenu()` 的 `modes[]` 数组 → `Think()` 分支 → `ExecuteJob()` → `ActionLabel()` 文案 |
+| 加一个配置项 | `ModConfig` 字段 → `Sanitize()` → 对应 `*Rows()` 页 → GMCM 注册 → README 参数表（**五处都要动**） |
+| 改 AI 的长相 | 改 `tools/make_sprite.py` 的调色板/部件后重跑，会重新生成 `assets/ai_sprite.png` |
+| 改台词 | `config.json` 里的 `文本_*` 字段，或游戏内「设置 → 文本」页 |
+| 加干活逻辑 | `Companion.cs` 里照 `DoFishing()` / `DoMining()` 的样子写一个 `DoXxx(dtMs)`，再挂到 `ExecuteJob()` |
+
+> 更细的架构决策、踩过的坑、每个 bug 的根因分析都在 **[PROJECT.md](PROJECT.md)**（1000 行，按模块编号，改代码前建议先扫一眼对应章节）。
 
 ## 📝 更新记录
 
