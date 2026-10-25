@@ -253,9 +253,11 @@ dotnet build
 
 几点边界要说清楚：
 
-- **不含游戏素材**：仓库里只有自己画的像素贴图（`assets/ai_sprite.png`）和代码，
-  不包含《星露谷物语》的任何原始美术／音频。游戏本体及其素材版权归
-  [ConcernedApe](https://www.stardewvalley.net/) 所有，本项目与官方无关。
+- **不含游戏素材**：仓库里只有自己画的像素贴图（`assets/ai_sprite.png`，16×24 的 12 帧小人）
+  和代码，不包含《星露谷物语》的任何原始美术／音频，也没有反编译出来的游戏代码
+  （`_refs/`、`gmcm-src/` 已写进 `.gitignore`）。运行时会借用游戏自带贴图
+  （比如 AI 手里的斧头直接用你那把同款工具的图），但那只是读内存里的资源，不随仓库分发。
+  游戏本体及其素材版权归 [ConcernedApe](https://www.stardewvalley.net/) 所有，本项目与官方无关。
 - **依赖 SMAPI 4.x**（LGPL-3.0）：只是引用它的程序集，不复制其源码，所以不受 LGPL 传染。
 - **Harmony** 由 SMAPI 自带（`smapi-internal/0Harmony.dll`），不随本模组分发。
 - **Generic Mod Config Menu** 是可选依赖，想要图形化设置界面请自行安装，本项目不再附带。
